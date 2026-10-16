@@ -1,0 +1,696 @@
+{
+  "sample_count": 50,
+  "phishing_count": 25,
+  "legit_count": 25,
+  "confusion_matrix": {
+    "matrix": [
+      [
+        23,
+        2
+      ],
+      [
+        0,
+        25
+      ]
+    ],
+    "tn": 23,
+    "fp": 2,
+    "fn": 0,
+    "tp": 25
+  },
+  "metrics": {
+    "accuracy": 0.96,
+    "precision": 0.9259,
+    "recall": 1.0,
+    "f1_score": 0.9615,
+    "false_positive_rate": 0.08,
+    "false_negative_rate": 0.0,
+    "specificity": 0.92,
+    "roc_auc": 1.0
+  },
+  "risk_tiers": {
+    "phishing_high": 25,
+    "phishing_medium": 0,
+    "phishing_low": 0,
+    "legit_high": 0,
+    "legit_medium": 5,
+    "legit_low": 20
+  },
+  "category_summary": {
+    "Contemporary Smishing/Lures": {
+      "total": 5,
+      "correct": 5,
+      "accuracy": 1.0,
+      "avg_probability": 0.97
+    },
+    "Legitimate Billing": {
+      "total": 6,
+      "correct": 6,
+      "accuracy": 1.0,
+      "avg_probability": 0.2165
+    },
+    "Legitimate Collaboration": {
+      "total": 6,
+      "correct": 6,
+      "accuracy": 1.0,
+      "avg_probability": 0.0677
+    },
+    "Legitimate Operations": {
+      "total": 6,
+      "correct": 6,
+      "accuracy": 1.0,
+      "avg_probability": 0.0437
+    },
+    "Legitimate Security Alert": {
+      "total": 7,
+      "correct": 5,
+      "accuracy": 0.7143,
+      "avg_probability": 0.3206
+    },
+    "MFA Fatigue": {
+      "total": 5,
+      "correct": 5,
+      "accuracy": 1.0,
+      "avg_probability": 0.9884
+    },
+    "Paraphrased Phishing": {
+      "total": 5,
+      "correct": 5,
+      "accuracy": 1.0,
+      "avg_probability": 0.9847
+    },
+    "Payment Diversion": {
+      "total": 5,
+      "correct": 5,
+      "accuracy": 1.0,
+      "avg_probability": 0.9807
+    },
+    "Subtle BEC": {
+      "total": 5,
+      "correct": 5,
+      "accuracy": 1.0,
+      "avg_probability": 0.9869
+    }
+  },
+  "detailed_results": [
+    {
+      "id": "bec_falcon_escrow",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9998,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "bec_legal_retainer",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9513,
+      "risk_level": "High",
+      "risk_score": 95,
+      "tactics": [
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "bec_summit_giftcards",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9956,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "bec_heathrow_stipend",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9885,
+      "risk_level": "High",
+      "risk_score": 99,
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "bec_kpmg_audit_validation",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9995,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "mfa_okta_verify_checkpoint",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9999,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "urgency",
+        "impersonation"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "mfa_duo_phone_bypass",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9992,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "mfa_msft_code_match",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.943,
+      "risk_level": "High",
+      "risk_score": 94,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "mfa_ping_federate_timeout",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 1.0,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "mfa_fido_key_attestation",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9998,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "urgency"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "payment_acme_remittance_swap",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9992,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "impersonation",
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "payment_payroll_direct_deposit",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9176,
+      "risk_level": "High",
+      "risk_score": 92,
+      "tactics": [
+        "impersonation",
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "payment_machinery_swift_iban",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9978,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "payment_overpayment_wire_refund",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9889,
+      "risk_level": "High",
+      "risk_score": 99,
+      "tactics": [
+        "urgency",
+        "impersonation",
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "payment_escrow_title_change",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9999,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "sensitive_info"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "paraphrased_miro_whiteboard",
+      "category": "Paraphrased Phishing",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9987,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "paraphrased_greenhouse_job",
+      "category": "Paraphrased Phishing",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9947,
+      "risk_level": "High",
+      "risk_score": 99,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "paraphrased_podcast_interview",
+      "category": "Paraphrased Phishing",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9866,
+      "risk_level": "High",
+      "risk_score": 99,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "paraphrased_adobe_contract",
+      "category": "Paraphrased Phishing",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9927,
+      "risk_level": "High",
+      "risk_score": 99,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "paraphrased_recognition_perks",
+      "category": "Paraphrased Phishing",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9508,
+      "risk_level": "High",
+      "risk_score": 95,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "smishing_usps_redelivery",
+      "category": "Contemporary Smishing/Lures",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9895,
+      "risk_level": "High",
+      "risk_score": 99,
+      "tactics": [
+        "impersonation"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "smishing_ezpass_toll",
+      "category": "Contemporary Smishing/Lures",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9986,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [
+        "threats"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "smishing_voicemail_audio",
+      "category": "Contemporary Smishing/Lures",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9997,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "lure_qr_code_migration",
+      "category": "Contemporary Smishing/Lures",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.8626,
+      "risk_level": "High",
+      "risk_score": 86,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "lure_quarantined_files",
+      "category": "Contemporary Smishing/Lures",
+      "true_label": 1,
+      "predicted_label": 1,
+      "calibrated_prob": 0.9998,
+      "risk_level": "High",
+      "risk_score": 100,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_github_pat_created",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "predicted_label": 1,
+      "calibrated_prob": 0.6523,
+      "risk_level": "Medium",
+      "risk_score": 65,
+      "tactics": [
+        "urgency"
+      ],
+      "is_correct": false
+    },
+    {
+      "id": "legit_aws_root_console",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.1984,
+      "risk_level": "Low",
+      "risk_score": 20,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_slack_session_notice",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.4641,
+      "risk_level": "Medium",
+      "risk_score": 46,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_google_2step_status",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "predicted_label": 1,
+      "calibrated_prob": 0.5493,
+      "risk_level": "Medium",
+      "risk_score": 55,
+      "tactics": [],
+      "is_correct": false
+    },
+    {
+      "id": "legit_vpn_tunnel_active",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.2891,
+      "risk_level": "Low",
+      "risk_score": 29,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_bank_fraud_text_reply",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0497,
+      "risk_level": "Low",
+      "risk_score": 5,
+      "tactics": [
+        "impersonation"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "legit_it_patch_cycle",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0415,
+      "risk_level": "Low",
+      "risk_score": 4,
+      "tactics": [
+        "urgency"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "legit_stripe_jira_receipt",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.2028,
+      "risk_level": "Low",
+      "risk_score": 20,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_pge_autopay_final",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0202,
+      "risk_level": "Low",
+      "risk_score": 2,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_concur_expense_approved",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.1555,
+      "risk_level": "Low",
+      "risk_score": 16,
+      "tactics": [
+        "impersonation"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "legit_colocation_standard_inv",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.4252,
+      "risk_level": "Medium",
+      "risk_score": 43,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_capitalone_savings_interest",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.4869,
+      "risk_level": "Medium",
+      "risk_score": 49,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_workday_biweekly_payslip",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0085,
+      "risk_level": "Low",
+      "risk_score": 1,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_postgres_maintenance",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0891,
+      "risk_level": "Low",
+      "risk_score": 9,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_jira_ticket_monitor_closed",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0458,
+      "risk_level": "Low",
+      "risk_score": 5,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_wifi_wpa3_cert_notice",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.022,
+      "risk_level": "Low",
+      "risk_score": 2,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_jetbrains_license_renewed",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0978,
+      "risk_level": "Low",
+      "risk_score": 10,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_flu_vaccine_wellness",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0072,
+      "risk_level": "Low",
+      "risk_score": 1,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_thanksgiving_holiday_memo",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0005,
+      "risk_level": "Low",
+      "risk_score": 0,
+      "tactics": [
+        "impersonation"
+      ],
+      "is_correct": true
+    },
+    {
+      "id": "legit_qbr_slides_review",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0497,
+      "risk_level": "Low",
+      "risk_score": 5,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_sprint_retro_action_items",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0675,
+      "risk_level": "Low",
+      "risk_score": 7,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_team_lunch_poll_rsvp",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0597,
+      "risk_level": "Low",
+      "risk_score": 6,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_github_pr_telemetry",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0543,
+      "risk_level": "Low",
+      "risk_score": 5,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_nda_legal_redlines",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.1662,
+      "risk_level": "Low",
+      "risk_score": 17,
+      "tactics": [],
+      "is_correct": true
+    },
+    {
+      "id": "legit_cloud_migration_proposal_sync",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "predicted_label": 0,
+      "calibrated_prob": 0.0085,
+      "risk_level": "Low",
+      "risk_score": 1,
+      "tactics": [],
+      "is_correct": true
+    }
+  ]
+}

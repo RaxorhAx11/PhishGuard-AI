@@ -1,0 +1,418 @@
+{
+  "sample_count": 30,
+  "phishing_count": 15,
+  "legit_count": 15,
+  "confusion_matrix": {
+    "matrix": [
+      [
+        12,
+        3
+      ],
+      [
+        0,
+        15
+      ]
+    ],
+    "tn": 12,
+    "fp": 3,
+    "fn": 0,
+    "tp": 15
+  },
+  "metrics": {
+    "accuracy": 0.9,
+    "precision": 0.8333,
+    "recall": 1.0,
+    "f1_score": 0.9091,
+    "false_positive_rate": 0.2,
+    "specificity": 0.8,
+    "roc_auc": 1.0
+  },
+  "category_summary": {
+    "Contemporary Smishing/Lures": {
+      "total": 2,
+      "correct": 2,
+      "accuracy": 1.0,
+      "avg_prob": 0.9975
+    },
+    "Legitimate Billing": {
+      "total": 5,
+      "correct": 4,
+      "accuracy": 0.8,
+      "avg_prob": 0.159
+    },
+    "Legitimate Collaboration": {
+      "total": 3,
+      "correct": 3,
+      "accuracy": 1.0,
+      "avg_prob": 0.0808
+    },
+    "Legitimate Operations": {
+      "total": 2,
+      "correct": 2,
+      "accuracy": 1.0,
+      "avg_prob": 0.0244
+    },
+    "Legitimate Security Alert": {
+      "total": 5,
+      "correct": 3,
+      "accuracy": 0.6,
+      "avg_prob": 0.4298
+    },
+    "MFA Fatigue": {
+      "total": 3,
+      "correct": 3,
+      "accuracy": 1.0,
+      "avg_prob": 0.929
+    },
+    "Paraphrased Phishing": {
+      "total": 2,
+      "correct": 2,
+      "accuracy": 1.0,
+      "avg_prob": 0.9922
+    },
+    "Payment Diversion": {
+      "total": 4,
+      "correct": 4,
+      "accuracy": 1.0,
+      "avg_prob": 0.9918
+    },
+    "Subtle BEC": {
+      "total": 4,
+      "correct": 4,
+      "accuracy": 1.0,
+      "avg_prob": 0.9441
+    }
+  },
+  "sample_results": [
+    {
+      "id": "fresh_bec_patent_counsel",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9898,
+      "risk_level": "High",
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_bec_cfo_tokyo_stipend",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.939,
+      "risk_level": "High",
+      "tactics": [
+        "urgency",
+        "impersonation",
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_bec_giftcard_partner_retreat",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.8484,
+      "risk_level": "High",
+      "tactics": [
+        "impersonation"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_bec_ernst_young_audit",
+      "category": "Subtle BEC",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9994,
+      "risk_level": "High",
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_payment_apex_hvac_remittance",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9683,
+      "risk_level": "High",
+      "tactics": [
+        "impersonation",
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_payment_payroll_credit_union",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 1.0,
+      "risk_level": "High",
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_payment_lease_escrow_redirect",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9998,
+      "risk_level": "High",
+      "tactics": [
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_payment_machinery_iban_switch",
+      "category": "Payment Diversion",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9991,
+      "risk_level": "High",
+      "tactics": [
+        "urgency",
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_mfa_jumpcloud_push",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9999,
+      "risk_level": "High",
+      "tactics": [
+        "sensitive_info"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_mfa_azure_code_match",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.7939,
+      "risk_level": "High",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_mfa_duo_tokyo_bypass",
+      "category": "MFA Fatigue",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9933,
+      "risk_level": "High",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_lure_figma_board_collab",
+      "category": "Paraphrased Phishing",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9873,
+      "risk_level": "High",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_lure_lever_recruiter",
+      "category": "Paraphrased Phishing",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9971,
+      "risk_level": "High",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_smishing_ups_customs",
+      "category": "Contemporary Smishing/Lures",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9959,
+      "risk_level": "High",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_smishing_toll_turnpike",
+      "category": "Contemporary Smishing/Lures",
+      "true_label": 1,
+      "pred_label": 1,
+      "prob": 0.9991,
+      "risk_level": "High",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_cloudflare_zero_trust",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.3526,
+      "risk_level": "Medium",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_tailscale_node_added",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "pred_label": 1,
+      "prob": 0.5725,
+      "risk_level": "Medium",
+      "tactics": [],
+      "correct": false
+    },
+    {
+      "id": "fresh_legit_bitbucket_ssh_key",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.2106,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_google_workspace_suspicious_blocked",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "pred_label": 1,
+      "prob": 0.6908,
+      "risk_level": "Medium",
+      "tactics": [
+        "impersonation"
+      ],
+      "correct": false
+    },
+    {
+      "id": "fresh_legit_okta_password_expiration_reminder",
+      "category": "Legitimate Security Alert",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.3224,
+      "risk_level": "Low",
+      "tactics": [
+        "urgency",
+        "impersonation"
+      ],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_github_actions_receipt",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.1153,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_digitalocean_invoice",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.0813,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_carta_equity_invoice",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "pred_label": 1,
+      "prob": 0.571,
+      "risk_level": "Medium",
+      "tactics": [],
+      "correct": false
+    },
+    {
+      "id": "fresh_legit_amex_autopay_scheduled",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.0248,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_adp_payroll_summary",
+      "category": "Legitimate Billing",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.0024,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_redis_maintenance_window",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.0474,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_figma_design_sync",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.1653,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_facilities_hvac_memo",
+      "category": "Legitimate Operations",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.0015,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_lunch_catering_poll",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.0105,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    },
+    {
+      "id": "fresh_legit_github_pr_telemetry_retry",
+      "category": "Legitimate Collaboration",
+      "true_label": 0,
+      "pred_label": 0,
+      "prob": 0.0666,
+      "risk_level": "Low",
+      "tactics": [],
+      "correct": true
+    }
+  ]
+}

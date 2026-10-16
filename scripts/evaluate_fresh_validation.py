@@ -1,0 +1,526 @@
+"""
+Final Validation on Fresh Out-of-Distribution Test Set.
+Evaluates the improved PhishGuard AI model on a brand-new, separate validation test set
+that does not overlap with the training set, previous independent test set, or existing test suites.
+"""
+
+import os
+import sys
+import json
+import re
+from typing import Dict, List, Any, Tuple
+
+WORKSPACE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.insert(0, WORKSPACE_DIR)
+
+import numpy as np
+import pandas as pd
+from sklearn.metrics import (
+    confusion_matrix,
+    precision_score,
+    recall_score,
+    f1_score,
+    accuracy_score,
+    roc_auc_score,
+)
+
+from src.model import PhishGuardClassifier, DEFAULT_MODEL_PATH
+from src.tactics import analyze_tactics
+from src.preprocessing import clean_text
+
+DATA_PATH = os.path.join(WORKSPACE_DIR, "data", "dataset.csv")
+INDEP_TEST_PATH = os.path.join(WORKSPACE_DIR, "data", "independent_test_set.json")
+
+# 30 Brand-New, Distinct Validation Test Samples
+FRESH_VALIDATION_SET: List[Dict[str, Any]] = [
+    # =========================================================================
+    # PHISHING & SOCIAL ENGINEERING (Label = 1, 15 Samples)
+    # =========================================================================
+    # 1. Subtle BEC
+    {
+        "id": "fresh_bec_patent_counsel",
+        "category": "Subtle BEC",
+        "label": 1,
+        "text": (
+            "Subject: Confidential - Special Outside Counsel Retainer\n\n"
+            "Hi Amanda, We are finalizing our representation agreement with Fenwick & West for "
+            "the upcoming intellectual property portfolio dispute. Please process an urgent retainer "
+            "wire of $38,500 to the attorney client trust account in the attached authorization before "
+            "close of banking today. Keep this strictly between executive staff."
+        ),
+    },
+    {
+        "id": "fresh_bec_cfo_tokyo_stipend",
+        "category": "Subtle BEC",
+        "label": 1,
+        "text": (
+            "Subject: Urgent travel fund request - Tokyo transit\n\n"
+            "Hi Accounts, My corporate card was blocked by the security department upon arrival at Tokyo Haneda. "
+            "Could you please issue an emergency travel stipend wire of $4,500 to my personal Wise multicurrency "
+            "account so I can cover client dinner accommodations and transport? Account details attached."
+        ),
+    },
+    {
+        "id": "fresh_bec_giftcard_partner_retreat",
+        "category": "Subtle BEC",
+        "label": 1,
+        "text": (
+            "Subject: Quick favor before partner dinner\n\n"
+            "Are you at your desk right now? I am moderating our executive partner roundtable and can't step away. "
+            "Could you quickly acquire 5 Apple Store digital gift cards of $150 each for our guest panel? "
+            "Please send the gift card voucher codes directly here. I'll make sure Finance reimburses you by Friday."
+        ),
+    },
+    {
+        "id": "fresh_bec_ernst_young_audit",
+        "category": "Subtle BEC",
+        "label": 1,
+        "text": (
+            "Subject: Urgent: EY Audit Liquidity Reconciliation\n\n"
+            "Dear Treasury Team, As part of Ernst & Young's statutory year-end audit verification, our audit "
+            "partner needs immediate re-confirmation of our operating liquidity. Please reply urgently with our "
+            "current account balances and latest outbound wire routing numbers to authorize the validation schedule."
+        ),
+    },
+
+    # 2. Payment Diversion & Remittance Rerouting
+    {
+        "id": "fresh_payment_apex_hvac_remittance",
+        "category": "Payment Diversion",
+        "label": 1,
+        "text": (
+            "Subject: Notice of New Bank Remittance Coordinates - Apex HVAC\n\n"
+            "Dear Accounts Payable, Due to our annual treasury restructuring, all upcoming disbursements for "
+            "Apex Commercial HVAC must now be directed to our new KeyBank operating account ending in 5521. "
+            "Attached is our updated W-9 form and ACH banking details. Please update your vendor profile before "
+            "processing this week's check run."
+        ),
+    },
+    {
+        "id": "fresh_payment_payroll_credit_union",
+        "category": "Payment Diversion",
+        "label": 1,
+        "text": (
+            "Subject: Update direct deposit account before payroll cutoff\n\n"
+            "Hello HR Payroll, I recently transitioned my primary checking to First Tech Federal Credit Union. "
+            "Could you please update my direct deposit allocation to route 100% of my upcoming net pay into "
+            "routing number 321171184 account 9048120? Attached is my voided check."
+        ),
+    },
+    {
+        "id": "fresh_payment_lease_escrow_redirect",
+        "category": "Payment Diversion",
+        "label": 1,
+        "text": (
+            "Subject: Revised Wire Instructions for Office Lease Escrow\n\n"
+            "Dear Tenant, Please be advised that the escrow wire instructions for Suite 400 security deposit "
+            "have been updated due to an internal bank consolidation at First National Title. Please wire the final "
+            "balance of $28,000.00 to the updated routing coordinates in the revised PDF."
+        ),
+    },
+    {
+        "id": "fresh_payment_machinery_iban_switch",
+        "category": "Payment Diversion",
+        "label": 1,
+        "text": (
+            "Subject: RE: Final Machinery Settlement - New IBAN\n\n"
+            "Hello Finance, Regarding PO #88391 for the hydraulic presses: Our Munich subsidiary bank account is "
+            "undergoing an internal audit. Please remit the remaining €45,000 balance to our auxiliary IBAN "
+            "DE44500105178492019284 immediately so the equipment can clear shipping customs."
+        ),
+    },
+
+    # 3. MFA Fatigue, Session Theft & Contemporary Lures
+    {
+        "id": "fresh_mfa_jumpcloud_push",
+        "category": "MFA Fatigue",
+        "label": 1,
+        "text": (
+            "JumpCloud Directory Security: Repeated abnormal push authorization requests were detected from IP 84.15.22.1. "
+            "To invalidate these notification loops and secure your directory token, tap here and confirm identity: "
+            "https://jumpcloud-sso-verify-auth.com/login"
+        ),
+    },
+    {
+        "id": "fresh_mfa_azure_code_match",
+        "category": "MFA Fatigue",
+        "label": 1,
+        "text": (
+            "Microsoft Entra ID Notice: Your device authentication certificate has expired. An automated Microsoft "
+            "Authenticator push prompt has been dispatched to your registered phone. Please approve code 92 to avoid "
+            "email lockout."
+        ),
+    },
+    {
+        "id": "fresh_mfa_duo_tokyo_bypass",
+        "category": "MFA Fatigue",
+        "label": 1,
+        "text": (
+            "Duo Two-Factor Alert: An unrecognized sign-in was blocked from Osaka, Japan. If this was not you, authenticate "
+            "at https://duo-lockout-security-protect.net to freeze your active sessions and reset your passkeys."
+        ),
+    },
+    {
+        "id": "fresh_lure_figma_board_collab",
+        "category": "Paraphrased Phishing",
+        "label": 1,
+        "text": (
+            "Hey! I finished sketching the updated customer onboarding user flows and UI wireframes in our collaborative "
+            "Figma workspace. Please take a look and leave sticky notes before our sprint kickoff: "
+            "http://figma-team-workspaces.io/design/invite?id=99281"
+        ),
+    },
+    {
+        "id": "fresh_lure_lever_recruiter",
+        "category": "Paraphrased Phishing",
+        "label": 1,
+        "text": (
+            "Hi there! Our talent acquisition team was impressed by your GitHub repositories and wants to consider you "
+            "for our Staff Infrastructure Architect role ($215k base). Review the complete compensation package and "
+            "submit your resume here: https://lever-talent-careers-review.cc/apply/49102"
+        ),
+    },
+    {
+        "id": "fresh_smishing_ups_customs",
+        "category": "Contemporary Smishing/Lures",
+        "label": 1,
+        "text": (
+            "UPS Notification: International parcel #1Z99284019284 has a pending customs handling fee of $2.40. "
+            "Confirm payment and schedule door delivery here: https://ups-customs-handling-release.com"
+        ),
+    },
+    {
+        "id": "fresh_smishing_toll_turnpike",
+        "category": "Contemporary Smishing/Lures",
+        "label": 1,
+        "text": (
+            "Turnpike Toll Authority: Our automated toll cameras recorded $8.75 in unpaid tolls for your vehicle registration. "
+            "Avoid $50 administrative collection fees by settling now: https://turnpike-toll-service-pay.info"
+        ),
+    },
+
+    # =========================================================================
+    # LEGITIMATE COMMUNICATIONS (Label = 0, 15 Samples)
+    # =========================================================================
+    # 1. Legitimate Security Alerts & System Notifications
+    {
+        "id": "fresh_legit_cloudflare_zero_trust",
+        "category": "Legitimate Security Alert",
+        "label": 0,
+        "text": (
+            "Cloudflare Zero Trust Notice: A new Access session was authorized for user@company.com through corporate "
+            "identity provider from Chrome on macOS (IP: 198.51.100.82). If this was you, no action is needed. "
+            "Session lifetime is governed by your organization access policy."
+        ),
+    },
+    {
+        "id": "fresh_legit_tailscale_node_added",
+        "category": "Legitimate Security Alert",
+        "label": 0,
+        "text": (
+            "Tailscale Admin Alert: A new device 'macbook-pro-m3' was authenticated to your tailnet 'engineering-corp' "
+            "by user alex@company.com with Tailscale IP 100.84.19.20. Manage connected machines in the Tailscale admin console."
+        ),
+    },
+    {
+        "id": "fresh_legit_bitbucket_ssh_key",
+        "category": "Legitimate Security Alert",
+        "label": 0,
+        "text": (
+            "Bitbucket Security: A new SSH deploy key with read-only repository permissions was registered for repository "
+            "backend-core by developer Sarah Miller. If you did not authorize this, revoke the key in repository access keys."
+        ),
+    },
+    {
+        "id": "fresh_legit_google_workspace_suspicious_blocked",
+        "category": "Legitimate Security Alert",
+        "label": 0,
+        "text": (
+            "Google Workspace Alert: An anomalous sign-in attempt from an unrecognized IP in Moscow was automatically "
+            "blocked by Google identity protection for your account. No credentials were compromised. Review recent "
+            "security events in your Google Admin console."
+        ),
+    },
+    {
+        "id": "fresh_legit_okta_password_expiration_reminder",
+        "category": "Legitimate Security Alert",
+        "label": 0,
+        "text": (
+            "Okta Security Notice: Your corporate network password will expire in 30 days per company security policy. "
+            "You can update your password at your convenience through your standard Okta dashboard settings. No immediate "
+            "action is required today."
+        ),
+    },
+
+    # 2. Legitimate Billing & Financial Notices
+    {
+        "id": "fresh_legit_github_actions_receipt",
+        "category": "Legitimate Billing",
+        "label": 0,
+        "text": (
+            "Receipt from GitHub via Stripe: Payment of $84.00 for GitHub Actions additional runner compute minutes "
+            "was successfully processed on Oct 14, 2026. Payment method: Visa ending in 9102. Download tax invoice PDF "
+            "directly in GitHub organization billing."
+        ),
+    },
+    {
+        "id": "fresh_legit_digitalocean_invoice",
+        "category": "Legitimate Billing",
+        "label": 0,
+        "text": (
+            "DigitalOcean Invoice Paid: Your monthly cloud infrastructure invoice #DO-98421 ($120.50) for 4 Droplets and "
+            "Managed Database cluster was paid using credit card ending in 3341. Your receipt is available in cloud console."
+        ),
+    },
+    {
+        "id": "fresh_legit_carta_equity_invoice",
+        "category": "Legitimate Billing",
+        "label": 0,
+        "text": (
+            "Carta Subscription Invoice: Annual cap table management subscription ($1,850.00) for NextGen Technologies Inc "
+            "has been charged to corporate card ending in 7721. Itemized subscription receipt saved in company document vault."
+        ),
+    },
+    {
+        "id": "fresh_legit_amex_autopay_scheduled",
+        "category": "Legitimate Billing",
+        "label": 0,
+        "text": (
+            "American Express Auto-Pay Scheduled: Your automatic payment of $642.10 will be debited from checking account "
+            "ending in 4410 on November 04, 2026 for card ending in 1009. Log into americanexpress.com to manage payment preferences."
+        ),
+    },
+    {
+        "id": "fresh_legit_adp_payroll_summary",
+        "category": "Legitimate Billing",
+        "label": 0,
+        "text": (
+            "ADP TotalSource Notice: Semi-monthly payroll run for period ending October 15 has been finalized and submitted "
+            "to clearinghouse. Department managers can review summary tax allocation reports in the ADP manager portal."
+        ),
+    },
+
+    # 3. Legitimate Operations & Collaboration
+    {
+        "id": "fresh_legit_redis_maintenance_window",
+        "category": "Legitimate Operations",
+        "label": 0,
+        "text": (
+            "Engineering Maintenance Announcement: Our production Redis cluster will undergo memory optimization and engine "
+            "version upgrade this Saturday between 03:00 and 04:30 UTC. Brief failover switchover of under 5 seconds may occur. "
+            "All cached data is persistent."
+        ),
+    },
+    {
+        "id": "fresh_legit_figma_design_sync",
+        "category": "Legitimate Collaboration",
+        "label": 0,
+        "text": (
+            "Hey design team, I've published version 3.2 of our core component design tokens in Figma. Please pull the latest "
+            "library updates in your project files before tomorrow's mobile review session."
+        ),
+    },
+    {
+        "id": "fresh_legit_facilities_hvac_memo",
+        "category": "Legitimate Operations",
+        "label": 0,
+        "text": (
+            "Facilities Bulletin: Seasonal filter replacement and HVAC maintenance on Floors 2 through 5 will take place this "
+            "Saturday between 8:00 AM and 2:00 PM. Building access will remain open, but minor fan noise is expected."
+        ),
+    },
+    {
+        "id": "fresh_legit_lunch_catering_poll",
+        "category": "Legitimate Collaboration",
+        "label": 0,
+        "text": (
+            "Hi everyone, we are organizing our monthly engineering all-hands social next Wednesday. Please fill out the brief "
+            "dietary questionnaire on our internal wiki by Monday so the event planning team can order appropriate catering."
+        ),
+    },
+    {
+        "id": "fresh_legit_github_pr_telemetry_retry",
+        "category": "Legitimate Collaboration",
+        "label": 0,
+        "text": (
+            "Pull Request #412: 'Add jittered exponential backoff to downstream Redis connection pool' has been updated with "
+            "requested unit tests. CI pipeline passed on all matrix targets. Requesting approval from @lead-architect."
+        ),
+    },
+]
+
+
+def verify_fresh_no_overlap() -> Tuple[bool, List[str]]:
+    """Verifies that NONE of the fresh validation samples overlap with dataset.csv or independent_test_set.json."""
+    issues = []
+
+    # 1. Dataset.csv
+    df = pd.read_csv(DATA_PATH)
+    train_raw = set(df["text"].dropna().astype(str).str.strip().str.lower())
+    train_clean = set(clean_text(t) for t in train_raw)
+    train_tokens = [set(re.findall(r"\w+", t)) for t in train_raw if len(t) > 30]
+
+    # 2. Independent Test Set
+    with open(INDEP_TEST_PATH, "r", encoding="utf-8") as f:
+        indep_data = json.load(f)
+    indep_raw = set(s["text"].strip().lower() for s in indep_data)
+    indep_clean = set(clean_text(s["text"]) for s in indep_data)
+
+    for s in FRESH_VALIDATION_SET:
+        sample_id = s["id"]
+        raw = s["text"].strip().lower()
+        cleaned = clean_text(s["text"])
+
+        if raw in train_raw:
+            issues.append(f"Fresh sample '{sample_id}' exact raw match in dataset.csv!")
+        if raw in indep_raw:
+            issues.append(f"Fresh sample '{sample_id}' exact raw match in independent_test_set.json!")
+        if cleaned in train_clean:
+            issues.append(f"Fresh sample '{sample_id}' cleaned match in dataset.csv!")
+        if cleaned in indep_clean:
+            issues.append(f"Fresh sample '{sample_id}' cleaned match in independent_test_set.json!")
+
+        s_tokens = set(re.findall(r"\w+", raw))
+        if len(s_tokens) > 5:
+            for t_tok in train_tokens:
+                if len(t_tok) > 5:
+                    inter = len(s_tokens & t_tok)
+                    if inter / len(s_tokens) > 0.8 and inter / len(t_tok) > 0.8:
+                        issues.append(f"Fresh sample '{sample_id}' high Jaccard with training sample")
+                        break
+
+    return len(issues) == 0, issues
+
+
+def evaluate_fresh_set() -> Dict[str, Any]:
+    clf = PhishGuardClassifier(DEFAULT_MODEL_PATH)
+    clf.load()
+
+    y_true = []
+    y_pred = []
+    y_prob = []
+    sample_results = []
+
+    for s in FRESH_VALIDATION_SET:
+        pred = clf.predict(s["text"])
+        tactics = list(analyze_tactics(s["text"]).keys())
+        prob = pred["calibrated_phish_probability"]
+        label = pred["prediction"]
+
+        y_true.append(s["label"])
+        y_pred.append(label)
+        y_prob.append(prob)
+
+        sample_results.append({
+            "id": s["id"],
+            "category": s["category"],
+            "true_label": s["label"],
+            "pred_label": label,
+            "prob": round(prob, 4),
+            "risk_level": pred["risk_level"],
+            "tactics": tactics,
+            "correct": bool(s["label"] == label),
+        })
+
+    cm = confusion_matrix(y_true, y_pred)
+    tn, fp, fn, tp = cm.ravel()
+
+    acc = accuracy_score(y_true, y_pred)
+    prec = precision_score(y_true, y_pred, zero_division=0)
+    rec = recall_score(y_true, y_pred, zero_division=0)
+    f1 = f1_score(y_true, y_pred, zero_division=0)
+    fpr = fp / (fp + tn) if (fp + tn) > 0 else 0.0
+    spec = tn / (tn + fp) if (tn + fp) > 0 else 0.0
+    try:
+        auc = roc_auc_score(y_true, y_prob)
+    except Exception:
+        auc = 0.0
+
+    categories = sorted(list(set(s["category"] for s in FRESH_VALIDATION_SET)))
+    cat_summary = {}
+    for cat in categories:
+        items = [r for r in sample_results if r["category"] == cat]
+        total = len(items)
+        corr = sum(1 for r in items if r["correct"])
+        cat_summary[cat] = {
+            "total": total,
+            "correct": corr,
+            "accuracy": round(corr / total, 4) if total > 0 else 0.0,
+            "avg_prob": round(float(np.mean([r["prob"] for r in items])), 4),
+        }
+
+    return {
+        "sample_count": len(FRESH_VALIDATION_SET),
+        "phishing_count": sum(1 for s in FRESH_VALIDATION_SET if s["label"] == 1),
+        "legit_count": sum(1 for s in FRESH_VALIDATION_SET if s["label"] == 0),
+        "confusion_matrix": {
+            "matrix": [[int(tn), int(fp)], [int(fn), int(tp)]],
+            "tn": int(tn),
+            "fp": int(fp),
+            "fn": int(fn),
+            "tp": int(tp),
+        },
+        "metrics": {
+            "accuracy": round(float(acc), 4),
+            "precision": round(float(prec), 4),
+            "recall": round(float(rec), 4),
+            "f1_score": round(float(f1), 4),
+            "false_positive_rate": round(float(fpr), 4),
+            "specificity": round(float(spec), 4),
+            "roc_auc": round(float(auc), 4),
+        },
+        "category_summary": cat_summary,
+        "sample_results": sample_results,
+    }
+
+
+if __name__ == "__main__":
+    print("=====================================================================")
+    print("   PhishGuard AI - Fresh Out-of-Distribution Validation Pipeline")
+    print("=====================================================================")
+
+    print("\n[Step 1] Verifying no data overlap with training set or previous test set...")
+    no_overlap, issues = verify_fresh_no_overlap()
+    if not no_overlap:
+        print("[FAIL] OVERLAP DETECTED:")
+        for iss in issues:
+            print(f"  - {iss}")
+        sys.exit(1)
+    else:
+        print("[OK] SUCCESS: 0 overlaps found across training set and previous test set.")
+
+    print("\n[Step 2] Executing fresh validation across 30 brand-new test cases...")
+    res = evaluate_fresh_set()
+
+    m = res["metrics"]
+    cm = res["confusion_matrix"]
+    print("\n------------------------- VALIDATION METRICS -------------------------")
+    print(f"Total Test Cases   : {res['sample_count']} (Phish: {res['phishing_count']}, Legit: {res['legit_count']})")
+    print(f"Accuracy           : {m['accuracy'] * 100:.2f}%")
+    print(f"Precision          : {m['precision'] * 100:.2f}%")
+    print(f"Recall             : {m['recall'] * 100:.2f}%")
+    print(f"F1-Score           : {m['f1_score'] * 100:.2f}%")
+    print(f"False Positive Rate: {m['false_positive_rate'] * 100:.2f}% (FPR = FP / (FP + TN))")
+    print(f"Specificity        : {m['specificity'] * 100:.2f}%")
+    print(f"ROC-AUC            : {m['roc_auc']:.4f}")
+
+    print("\n-------------------------- CONFUSION MATRIX --------------------------")
+    print(f"                  Predicted Legit    Predicted Phish")
+    print(f"  Actual Legit    TN = {cm['tn']:<14} FP = {cm['fp']:<14}")
+    print(f"  Actual Phish    FN = {cm['fn']:<14} TP = {cm['tp']:<14}")
+
+    print("\n----------------------- CATEGORY PERFORMANCE -------------------------")
+    for cat, stats in res["category_summary"].items():
+        print(f"  {cat:<28} : {stats['correct']}/{stats['total']} ({stats['accuracy']*100:.1f}%) | Avg Prob: {stats['avg_prob']:.4f}")
+
+    # Save to data directory
+    fresh_set_path = os.path.join(WORKSPACE_DIR, "data", "fresh_validation_test_set.json")
+    results_path = os.path.join(WORKSPACE_DIR, "data", "fresh_validation_results.json")
+
+    with open(fresh_set_path, "w", encoding="utf-8") as f:
+        json.dump(FRESH_VALIDATION_SET, f, indent=2)
+    with open(results_path, "w", encoding="utf-8") as f:
+        json.dump(res, f, indent=2)
+
+    print(f"\nSaved fresh validation set to: {fresh_set_path}")
+    print(f"Saved fresh validation results to: {results_path}")
